@@ -73,8 +73,8 @@ def test_decode_receipt(arbitrum):
         "hash": HexBytes("0x8b8c74711aa2e117a307f8a96a93350e5ca7e01a7bf39dbb7a824e6a6fc3736f"),
         "chainId": 42161,
         "from": "0x00000000000000000000000000000000000A4B05",
-        "gas": 0,
-        "gasPrice": 0,
+        "gas": 87,
+        "gasPrice": 44,
         "input": HexBytes(
             "0x6bf6a42d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011148fc000000000000000000000000000000000000000000000000000000000738db1b0000000000000000000000000000000000000000000000000000000000000000"  # noqa: E501
         ),
@@ -89,20 +89,31 @@ def test_decode_receipt(arbitrum):
         "transactionHash": HexBytes(
             "0x8b8c74711aa2e117a307f8a96a93350e5ca7e01a7bf39dbb7a824e6a6fc3736f"
         ),
-        "logs": [],
-        "contractAddress": None,
+        "logs": [{"test": "test"},],
+        "contractAddress": "0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326",
         "effectiveGasPrice": 100000000,
         "cumulativeGasUsed": 0,
-        "gasUsed": 0,
+        "gasUsed": 21,
+        "gasUsedForL1": "0x7",
         "logsBloom": HexBytes(
             "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"  # noqa: E501
         ),
         "status": 1,
         "l1BlockNumber": "0x11148fc",
-        "gasUsedForL1": "0x7",
     }
     actual = arbitrum.decode_receipt(data)
     assert isinstance(actual, ArbitrumReceipt)
 
-    # Check that the receipt decodes HexInt correctly
+    # Check that the receipt transmits values properly
+    assert actual.block_number == data["blockNumber"]
+    assert actual.contract_address == data["contractAddress"]
+    assert actual.gas_limit == data["gas"]
+    assert actual.gas_price == data["gasPrice"]
+    assert actual.gas_used == data["gasUsed"]
+    #assert actual.gas_used_for_L1 == data["gasUsedForL1"]
+    assert actual.logs == data["logs"]
+    assert actual.status == data["status"]
+    assert actual.txn_hash == data["transactionHash"]
+
+    # Check that the receipt decodes HexInt properly
     assert actual.gas_used_for_L1 == 7
