@@ -1,4 +1,5 @@
 import pytest
+from ape.utils import to_int
 from ape_ethereum.transactions import TransactionType
 from eth_pydantic_types import HexBytes
 from ethpm_types import MethodABI
@@ -110,10 +111,9 @@ def test_decode_receipt(arbitrum):
     assert actual.gas_limit == data["gas"]
     assert actual.gas_price == data["gasPrice"]
     assert actual.gas_used == data["gasUsed"]
-    #assert actual.gas_used_for_L1 == data["gasUsedForL1"]
     assert actual.logs == data["logs"]
     assert actual.status == data["status"]
-    assert actual.txn_hash == data["transactionHash"]
+    assert actual.txn_hash == data["transactionHash"].hex()
 
     # Check that the receipt decodes HexInt properly
-    assert actual.gas_used_for_L1 == 7
+    assert actual.gas_used_for_L1 == to_int(data["gasUsedForL1"])
